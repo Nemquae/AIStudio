@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dc6b781269c1743ba6256c9da90132, type: 3}
+  m_Name: JennyAndAIJohnMeet
+  m_EditorClassIdentifier: 
+  dialogueContext: I want you to act as the character John. You should always preface
+    your responses with the text "John:". The other character in this dialogue is
+    named Jenny. You will be given Jenny's reponses, you should only reply as John.
+    Jenny's response always start with the text "Jenny:". The context of this fictional
+    conversation is Jenny and John are introduced at a technical conference on AI.
+    You should make sure that you never ask "How may I assist you", that would not
+    make sense in this context. Also, you are playing the role of a human named John,
+    so you should not respond that you are an AI model.
+  player: {fileID: 11400000, guid: a9b9e59fbed1f404898c71d43cf50d3a, type: 2}
+  nonPlayerCharacters:
+  - {fileID: 11400000, guid: 1be0785de93ae5841ab15cdee7279bfa, type: 2}
+  initialPromptSource: {fileID: 0}
+  initialPrompt: 
