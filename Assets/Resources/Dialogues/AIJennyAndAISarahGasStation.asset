@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16dc6b781269c1743ba6256c9da90132, type: 3}
-  m_Name: AIJennyAndAISarah
+  m_Name: AIJennyAndAISarahGasStation
   m_EditorClassIdentifier: 
   dialogueContext: "I want you to pretend to be the fictional characters Sarah and
     Jenny.\r\nThe context of this fictional conversation is the two characters are
     attending a technical conference on AI and discussing the proceedings. The characters
-    are standing on the sidewalk in the city where the conference is being held.
-    There is a gas station across the street and a hot dog stand on a nearby corner.\r\nUse
+    are standing near a gas station in the city where the conference is being held.
+    There are soda machines nearby and a hot dog stand across the street.\r\nUse
     the character name followed by a colon as the prompt separator.\r\nYou should
     only respond as a single character with each prompt. Therefore there should only
     be a single \"character name:\" token in any response.\r\nYou should always stay
