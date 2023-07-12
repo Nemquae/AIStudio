@@ -21,19 +21,14 @@ namespace DracarysInteractive.AIStudio
         private Dictionary<string, SpeechSynthesizer> synthesizers = new Dictionary<string, SpeechSynthesizer>();
         private SpeechRecognizer recognizer;
         private List<VoiceInfo> voiceInfo;
-        private bool recogitionStarted;
+        private bool _recognitionStarted;
         private string defaultVoice = "en-US-JennyNeural";
-
-        private ISpeechServicesClient client;
-
-        public void SetClient(ISpeechServicesClient client)
-        {
-            this.client = client;
-        }
+        private Action _onStartSpeechRecognition;
+        private Action<string> _onSpeechRecognized;
 
         public bool RecognitionStarted
         {
-            get { return recogitionStarted; }
+            get { return _recognitionStarted; }
         }
 
         private SpeechConfig getConfig()
@@ -77,23 +72,23 @@ namespace DracarysInteractive.AIStudio
             {
                 Debug.Log($"RECOGNIZING: Text={e.Result.Text}");
 
-                if (!recogitionStarted)
+                if (!_recognitionStarted)
                 {
-                    recogitionStarted = true;
-                    client.StartSpeechRecognition();
+                    _recognitionStarted = true;
+                    _onStartSpeechRecognition.Invoke();
                 }
             };
 
             recognizer.Recognized += (s, e) =>
             {
-                recogitionStarted = false;
+                _recognitionStarted = false;
 
                 if (e.Result.Reason == ResultReason.RecognizedSpeech)
                 {
                     Debug.Log($"RECOGNIZED: Text={e.Result.Text}");
                     if (e.Result.Text.Length > 0)
                     {
-                        client.SpeechRecognized(e.Result.Text);
+                        _onSpeechRecognized(e.Result.Text);
                     }
                 }
                 else if (e.Result.Reason == ResultReason.NoMatch)
@@ -104,7 +99,7 @@ namespace DracarysInteractive.AIStudio
 
             recognizer.SpeechEndDetected += (s, e) =>
             {
-                recogitionStarted = false;
+                _recognitionStarted = false;
                 Debug.Log($"Speech end detected.");
             };
         }
@@ -154,8 +149,11 @@ namespace DracarysInteractive.AIStudio
             onSynthesisCompleted();
         }
 
-        public async void Recognize()
+        public async void Recognize(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
+            _onStartSpeechRecognition = onStartSpeechRecognition;
+            _onSpeechRecognized = onSpeechRecognized;
+
             var result = await recognizer.RecognizeOnceAsync();
 
             if (result.Reason == ResultReason.RecognizedSpeech)
@@ -180,13 +178,16 @@ namespace DracarysInteractive.AIStudio
             }
         }
 
-        public async void StartContinuousRecognizing()
+        public async void StartContinuousRecognizing(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
+            _onStartSpeechRecognition = onStartSpeechRecognition;
+            _onSpeechRecognized = onSpeechRecognized;
+
             var stopRecognition = new TaskCompletionSource<int>();
 
             recognizer.Canceled += (s, e) =>
             {
-                recogitionStarted = false;
+                _recognitionStarted = false;
 
                 Debug.Log($"CANCELED: Reason={e.Reason}");
 
@@ -202,7 +203,7 @@ namespace DracarysInteractive.AIStudio
 
             recognizer.SessionStopped += (s, e) =>
             {
-                recogitionStarted = false;
+                _recognitionStarted = false;
                 Debug.Log("\n    Session stopped event.");
                 stopRecognition.TrySetResult(0);
             };
@@ -288,7 +289,7 @@ namespace DracarysInteractive.AIStudio
             return sampleRate;
         }
 #else
-        public void Recognize()
+        public void Recognize(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
             throw new NotImplementedException();
         }
@@ -298,17 +299,12 @@ namespace DracarysInteractive.AIStudio
             throw new NotImplementedException();
         }
 
-        public void SetClient(ISpeechServicesClient client)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Speak(string text, string voice, Action<float[]> onDataReceived, Action onSynthesisCompleted)
         {
             throw new NotImplementedException();
         }
 
-        public void StartContinuousRecognizing()
+        public void StartContinuousRecognizing(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
             throw new NotImplementedException();
         }
