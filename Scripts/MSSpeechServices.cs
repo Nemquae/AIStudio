@@ -65,12 +65,12 @@ namespace DracarysInteractive.AIStudio
             {
                 var cancellation = CancellationDetails.FromResult(e.Result);
                 string message = $"CANCELED:\nReason=[{cancellation.Reason}]\nErrorDetails=[{cancellation.ErrorDetails}]\nDid you update the subscription info?";
-                Debug.LogError(message);
+                SpeechServices.Instance.Log(message, SpeechServices.LogLevel.error);
             };
 
             recognizer.Recognizing += (s, e) =>
             {
-                Debug.Log($"RECOGNIZING: Text={e.Result.Text}");
+                SpeechServices.Instance.Log($"RECOGNIZING: Text={e.Result.Text}");
 
                 if (!_recognitionStarted)
                 {
@@ -85,7 +85,7 @@ namespace DracarysInteractive.AIStudio
 
                 if (e.Result.Reason == ResultReason.RecognizedSpeech)
                 {
-                    Debug.Log($"RECOGNIZED: Text={e.Result.Text}");
+                    SpeechServices.Instance.Log($"RECOGNIZED: Text={e.Result.Text}");
                     if (e.Result.Text.Length > 0)
                     {
                         _onSpeechRecognized(e.Result.Text);
@@ -93,14 +93,14 @@ namespace DracarysInteractive.AIStudio
                 }
                 else if (e.Result.Reason == ResultReason.NoMatch)
                 {
-                    Debug.Log($"NOMATCH: Speech could not be recognized.");
+                    SpeechServices.Instance.Log($"NOMATCH: Speech could not be recognized.");
                 }
             };
 
             recognizer.SpeechEndDetected += (s, e) =>
             {
                 _recognitionStarted = false;
-                Debug.Log($"Speech end detected.");
+                SpeechServices.Instance.Log($"Speech end detected.");
             };
         }
 
@@ -158,22 +158,22 @@ namespace DracarysInteractive.AIStudio
 
             if (result.Reason == ResultReason.RecognizedSpeech)
             {
-                Debug.Log($"RECOGNIZED: Text={result.Text}");
+                SpeechServices.Instance.Log($"RECOGNIZED: Text={result.Text}");
             }
             else if (result.Reason == ResultReason.NoMatch)
             {
-                Debug.Log($"NOMATCH: Speech could not be recognized.");
+                SpeechServices.Instance.Log($"NOMATCH: Speech could not be recognized.");
             }
             else if (result.Reason == ResultReason.Canceled)
             {
                 var cancellation = CancellationDetails.FromResult(result);
-                Debug.Log($"CANCELED: Reason={cancellation.Reason}");
+                SpeechServices.Instance.Log($"CANCELED: Reason={cancellation.Reason}");
 
                 if (cancellation.Reason == CancellationReason.Error)
                 {
-                    Debug.Log($"CANCELED: ErrorCode={cancellation.ErrorCode}");
-                    Debug.Log($"CANCELED: ErrorDetails={cancellation.ErrorDetails}");
-                    Debug.Log($"CANCELED: Did you update the subscription info?");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorCode={cancellation.ErrorCode}");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorDetails={cancellation.ErrorDetails}");
+                    SpeechServices.Instance.Log($"CANCELED: Did you update the subscription info?");
                 }
             }
         }
@@ -189,13 +189,13 @@ namespace DracarysInteractive.AIStudio
             {
                 _recognitionStarted = false;
 
-                Debug.Log($"CANCELED: Reason={e.Reason}");
+                SpeechServices.Instance.Log($"CANCELED: Reason={e.Reason}");
 
                 if (e.Reason == CancellationReason.Error)
                 {
-                    Debug.Log($"CANCELED: ErrorCode={e.ErrorCode}");
-                    Debug.Log($"CANCELED: ErrorDetails={e.ErrorDetails}");
-                    Debug.Log($"CANCELED: Did you set the speech resource key and region values?");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorCode={e.ErrorCode}");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorDetails={e.ErrorDetails}");
+                    SpeechServices.Instance.Log($"CANCELED: Did you set the speech resource key and region values?");
                 }
 
                 stopRecognition.TrySetResult(0);
@@ -204,7 +204,7 @@ namespace DracarysInteractive.AIStudio
             recognizer.SessionStopped += (s, e) =>
             {
                 _recognitionStarted = false;
-                Debug.Log("\n    Session stopped event.");
+                SpeechServices.Instance.Log("\n    Session stopped event.");
                 stopRecognition.TrySetResult(0);
             };
 
@@ -240,7 +240,7 @@ namespace DracarysInteractive.AIStudio
                 {
                     var cancellation = SpeechSynthesisCancellationDetails.FromResult(e.Result);
                     string message = $"CANCELED:\nReason=[{cancellation.Reason}]\nErrorDetails=[{cancellation.ErrorDetails}]\nDid you update the subscription info?";
-                    Debug.LogError(message);
+                    SpeechServices.Instance.Log(message, SpeechServices.LogLevel.error);
                 };
 
                 synthesizers[voice] = synthesizer;
@@ -271,8 +271,6 @@ namespace DracarysInteractive.AIStudio
 
         void OnDestroy()
         {
-            Debug.Log("SpeechServices.OnDestroy cleaning up recognizer and synthesizers...");
-
             if (recognizer != null)
             {
                 recognizer.Dispose();

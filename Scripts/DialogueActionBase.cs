@@ -8,9 +8,9 @@ namespace DracarysInteractive.AIStudio
     {
         [SerializeField] private string _type;
         [SerializeField] private float _creationTime;
+        [SerializeField] private float _startTime;
+        [SerializeField] private float _completionTime;
         private Action _onCompletion;
-        private float _startTime;
-        private float _completionTime;
 
         protected DialogueActionBase(Action onCompletion = null)
         {
@@ -36,16 +36,21 @@ namespace DracarysInteractive.AIStudio
         public float startTime
         {
             get { return _startTime; }
-            private set { _startTime = value; }
+            set { _startTime = value; }
         }
 
         public float completionTime
         {
             get { return _completionTime; }
-            protected set { _completionTime = value; }
+            set { _completionTime = value; }
         }
 
         public abstract void Invoke();
+
+        protected void Log(string msg, DialogueActionManager.LogLevel level = DialogueActionManager.LogLevel.debug)
+        {
+            DialogueActionManager.Instance.Log($".{GetType().Name}: " + msg, level);
+        }
     }
 }
 

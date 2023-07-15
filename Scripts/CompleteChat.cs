@@ -40,7 +40,7 @@ namespace DracarysInteractive.AIStudio
 
         private void OnChatCompletionError(UnityWebRequest obj)
         {
-            Debug.LogWarning("CompleteChat.OnChatCompletionError!");
+            Log("OnChatCompletionError called!", DialogueActionManager.LogLevel.warning);
 
             if (retries++ < MAX_RETRIES)
             {
@@ -48,14 +48,14 @@ namespace DracarysInteractive.AIStudio
                 Invoke();
             }
             else
-                Debug.LogError("CompleteChat.OnChatCompletionError, retries exhausted!");
+                Log("OnChatCompletionError called, retries exhausted!", DialogueActionManager.LogLevel.error);
         }
 
         public void OnChatCompletion(string completion)
         {
             retries = 0;
 
-            Debug.Log($"OnChatCompletion: completion={completion}");
+            Log($"OnChatCompletion: completion={completion}");
 
             string[] subcompletions = StringHelper.SplitCompletion(completion);
 
@@ -66,7 +66,7 @@ namespace DracarysInteractive.AIStudio
                 if (subcompletion.Trim().Length == 0)
                     continue;
 
-                Debug.Log($"CompleteChat.OnChatCompletion subcompletion=\"{subcompletion}\"");
+                Log($"CompleteChat.OnChatCompletion subcompletion=\"{subcompletion}\"");
 
                 string name = null;
                 int i = subcompletion.IndexOf(':');
@@ -80,7 +80,7 @@ namespace DracarysInteractive.AIStudio
 
                 if (npc == null)
                 {
-                    Debug.LogWarning($"CompleteChat.OnChatCompletion model responded as player {name}");
+                    Log($"CompleteChat.OnChatCompletion model responded as player {name}");
                     continue;
                 }
 
