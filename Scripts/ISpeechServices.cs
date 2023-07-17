@@ -5,10 +5,9 @@ namespace DracarysInteractive.AIStudio
 {
     public interface ISpeechServices
     {
-        void SetClient(ISpeechServicesClient client);
-        void StartContinuousRecognizing();
+        void StartContinuousRecognizing(Action onStartSpeechRecognition, Action<string> onSpeechRecognized);
         void StopContinuousRecognizing();
-        void Recognize();
+        void Recognize(Action onStartSpeechRecognition, Action<string> onSpeechRecognized);
         void Speak(string text, string voice, Action<float[]> onDataReceived, Action onSynthesisCompleted);
         float SampleRate();
     }

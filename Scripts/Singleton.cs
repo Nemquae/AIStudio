@@ -11,6 +11,9 @@ namespace DracarysInteractive.AIStudio
     public abstract class Singleton<T> : MonoBehaviour
         where T : Singleton<T>
     {
+        public enum LogLevel { debug, info, warning, error };
+
+        [SerializeField] private LogLevel _logLevel = LogLevel.error;
         [SerializeField] private bool _destroyOnLoad = true;
 
         private static T _instance;
@@ -70,7 +73,7 @@ namespace DracarysInteractive.AIStudio
                     DontDestroyOnLoad(instanceVar.gameObject);
                 }
 
-                    return true;
+                return true;
             }
             else if (caller != instanceVar)
             {
@@ -84,5 +87,19 @@ namespace DracarysInteractive.AIStudio
         private void OnApplicationQuit() => AppQuitting = true;
 
         protected virtual void Awake() => TryCreateSingleton((T)this, ref _instance);
+
+        public void Log(string msg, LogLevel level = LogLevel.debug)
+        {
+            if (level >= _logLevel)
+            {
+                msg = $"{GetType().Name}: " + msg;
+                if (level <= LogLevel.info)
+                    Debug.Log(msg);
+                else if (level == LogLevel.warning)
+                    Debug.LogWarning(msg);
+                else
+                    Debug.LogError(msg);
+            }
+        }
     }
 }

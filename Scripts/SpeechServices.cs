@@ -10,9 +10,16 @@ namespace DracarysInteractive.AIStudio
         public bool recognizeContinuously = true;
         public GameObject warningText;
 
-        public void StartContinuousRecognizing()
+        protected override void Awake()
         {
-            Implementation.StartContinuousRecognizing();
+            // Force instantiation of plug-in otherwise we
+            // might call GetComponent in a subthread.
+            var bootImplementation = Implementation;
+        }
+
+        public void StartContinuousRecognizing(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
+        {
+            Implementation.StartContinuousRecognizing(onStartSpeechRecognition, onSpeechRecognized);
         }
 
         public void StopContinuousRecognizing()
@@ -20,11 +27,11 @@ namespace DracarysInteractive.AIStudio
             Implementation.StopContinuousRecognizing();
         }
 
-        public void Recognize()
+        public void Recognize(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
-            Implementation.Recognize();
+            Implementation.Recognize(onStartSpeechRecognition, onSpeechRecognized);
         }
-
+     
         public void Speak(string text, string voice, Action<float[]> onDataReceived, Action onSynthesisCompleted)
         {
             Implementation.Speak(text, voice, onDataReceived, onSynthesisCompleted);
@@ -32,11 +39,6 @@ namespace DracarysInteractive.AIStudio
         public float SampleRate()
         {
             return Implementation.SampleRate();
-        }
-
-        public void SetClient(ISpeechServicesClient client)
-        {
-            Implementation.SetClient(client);
         }
 
         void Update()
@@ -48,7 +50,14 @@ namespace DracarysInteractive.AIStudio
 
             if (!recognizeContinuously && Input.GetKeyDown(KeyCode.Backspace))
             {
-                Implementation.Recognize();
+                Implementation.Recognize(() =>
+                {
+                    DialogueActionManager.Instance.EnqueueAction(new StartSpeechRecognition(DialogueManager.Instance.GetPlayer()));
+                },
+                (string text) =>
+                {
+                    DialogueActionManager.Instance.EnqueueAction(new SpeechRecognized(DialogueManager.Instance.GetPlayer(), text));
+                });
             }
         }
     }

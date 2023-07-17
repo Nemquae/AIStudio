@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 
 namespace DracarysInteractive.AIStudio
 {
-    public class DialogueManager : Singleton<DialogueManager>, ISpeechServicesClient
+    public class DialogueManager : Singleton<DialogueManager>
     {
         public DialogueSO activeDialogue;
         public UnityEvent ClosingPromptInjected;
@@ -16,12 +17,6 @@ namespace DracarysInteractive.AIStudio
         private DialogueCharacter _player;
         private Dictionary<string, DialogueCharacter> _NPCs = new Dictionary<string, DialogueCharacter>();
         private bool _isRecognizing = false;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            SpeechServices.Instance.SetClient(this);
-        }
 
         private void OnEnable()
         {
@@ -93,7 +88,7 @@ namespace DracarysInteractive.AIStudio
             {
                 if (!_isRecognizing && SpeechServices.Instance.recognizeContinuously)
                 {
-                    Task.Run(SpeechServices.Instance.StartContinuousRecognizing);
+                    Task.Run(() => SpeechServices.Instance.StartContinuousRecognizing(onStartSpeechRecognition, onSpeechRecognized));
                     _isRecognizing = true;
                 }
 
@@ -146,6 +141,15 @@ namespace DracarysInteractive.AIStudio
                     new CloseDialogue(activeDialogue.nextScene, 0, OnClosingPrompt), dialogue.closingPromptDelay));
             }
         }
+        private void onStartSpeechRecognition()
+        {
+            DialogueActionManager.Instance.EnqueueAction(new StartSpeechRecognition(Instance.GetPlayer()));
+        }
+
+        private void onSpeechRecognized(string text)
+        {
+            DialogueActionManager.Instance.EnqueueAction(new SpeechRecognized(Instance.GetPlayer(), text));
+        }
 
         public DialogueCharacter GetNPC(string name)
         {
@@ -159,16 +163,6 @@ namespace DracarysInteractive.AIStudio
         public DialogueCharacter GetPlayer()
         {
             return _player;
-        }
-
-        public void StartSpeechRecognition()
-        {
-            DialogueActionManager.Instance.EnqueueAction(new StartSpeechRecognition(DialogueManager.Instance.GetPlayer()));
-        }
-
-        public void SpeechRecognized(string text)
-        {
-            DialogueActionManager.Instance.EnqueueAction(new SpeechRecognized(DialogueManager.Instance.GetPlayer(), text));
         }
 
         public bool HasPlayer

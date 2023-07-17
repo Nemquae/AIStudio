@@ -15,12 +15,15 @@ MonoBehaviour:
   dialogueContext: "I want you to pretend to be the fictional characters Jenny and
     Sarah. \r\nThe context of this fictional conversation is the two characters are
     attending a technical conference on AI and discussing the proceedings. \r\nUse
-    the character name followed by a colon as the prompt separator."
+    the character name followed by a colon as the prompt separator.\r\nYou should
+    only respond as a single character with each prompt. Therefore there should only
+    be a single \"character name:\" token in any response."
   player: {fileID: 0}
   nonPlayerCharacters:
   - {fileID: 11400000, guid: a9b9e59fbed1f404898c71d43cf50d3a, type: 2}
   - {fileID: 11400000, guid: ef9493f049da6fd4fb0aabaa7d82b78e, type: 2}
   initialPrompt: 'Jenny: Hi Sarah, nice to meet you!'
-  closingPrompt: 'Jenny: Well, goodbye Sarah!'
+  closingPrompt: 'Jenny: Apologies Sarah, but I have to run to the next session.
+    Goodbye!'
   closingPromptDelay: 30
   nextScene: DI End

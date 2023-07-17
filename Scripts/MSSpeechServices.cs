@@ -21,19 +21,14 @@ namespace DracarysInteractive.AIStudio
         private Dictionary<string, SpeechSynthesizer> synthesizers = new Dictionary<string, SpeechSynthesizer>();
         private SpeechRecognizer recognizer;
         private List<VoiceInfo> voiceInfo;
-        private bool recogitionStarted;
+        private bool _recognitionStarted;
         private string defaultVoice = "en-US-JennyNeural";
-
-        private ISpeechServicesClient client;
-
-        public void SetClient(ISpeechServicesClient client)
-        {
-            this.client = client;
-        }
+        private Action _onStartSpeechRecognition;
+        private Action<string> _onSpeechRecognized;
 
         public bool RecognitionStarted
         {
-            get { return recogitionStarted; }
+            get { return _recognitionStarted; }
         }
 
         private SpeechConfig getConfig()
@@ -70,42 +65,42 @@ namespace DracarysInteractive.AIStudio
             {
                 var cancellation = CancellationDetails.FromResult(e.Result);
                 string message = $"CANCELED:\nReason=[{cancellation.Reason}]\nErrorDetails=[{cancellation.ErrorDetails}]\nDid you update the subscription info?";
-                Debug.LogError(message);
+                SpeechServices.Instance.Log(message, SpeechServices.LogLevel.error);
             };
 
             recognizer.Recognizing += (s, e) =>
             {
-                Debug.Log($"RECOGNIZING: Text={e.Result.Text}");
+                SpeechServices.Instance.Log($"RECOGNIZING: Text={e.Result.Text}");
 
-                if (!recogitionStarted)
+                if (!_recognitionStarted)
                 {
-                    recogitionStarted = true;
-                    client.StartSpeechRecognition();
+                    _recognitionStarted = true;
+                    _onStartSpeechRecognition.Invoke();
                 }
             };
 
             recognizer.Recognized += (s, e) =>
             {
-                recogitionStarted = false;
+                _recognitionStarted = false;
 
                 if (e.Result.Reason == ResultReason.RecognizedSpeech)
                 {
-                    Debug.Log($"RECOGNIZED: Text={e.Result.Text}");
+                    SpeechServices.Instance.Log($"RECOGNIZED: Text={e.Result.Text}");
                     if (e.Result.Text.Length > 0)
                     {
-                        client.SpeechRecognized(e.Result.Text);
+                        _onSpeechRecognized(e.Result.Text);
                     }
                 }
                 else if (e.Result.Reason == ResultReason.NoMatch)
                 {
-                    Debug.Log($"NOMATCH: Speech could not be recognized.");
+                    SpeechServices.Instance.Log($"NOMATCH: Speech could not be recognized.");
                 }
             };
 
             recognizer.SpeechEndDetected += (s, e) =>
             {
-                recogitionStarted = false;
-                Debug.Log($"Speech end detected.");
+                _recognitionStarted = false;
+                SpeechServices.Instance.Log($"Speech end detected.");
             };
         }
 
@@ -154,47 +149,53 @@ namespace DracarysInteractive.AIStudio
             onSynthesisCompleted();
         }
 
-        public async void Recognize()
+        public async void Recognize(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
+            _onStartSpeechRecognition = onStartSpeechRecognition;
+            _onSpeechRecognized = onSpeechRecognized;
+
             var result = await recognizer.RecognizeOnceAsync();
 
             if (result.Reason == ResultReason.RecognizedSpeech)
             {
-                Debug.Log($"RECOGNIZED: Text={result.Text}");
+                SpeechServices.Instance.Log($"RECOGNIZED: Text={result.Text}");
             }
             else if (result.Reason == ResultReason.NoMatch)
             {
-                Debug.Log($"NOMATCH: Speech could not be recognized.");
+                SpeechServices.Instance.Log($"NOMATCH: Speech could not be recognized.");
             }
             else if (result.Reason == ResultReason.Canceled)
             {
                 var cancellation = CancellationDetails.FromResult(result);
-                Debug.Log($"CANCELED: Reason={cancellation.Reason}");
+                SpeechServices.Instance.Log($"CANCELED: Reason={cancellation.Reason}");
 
                 if (cancellation.Reason == CancellationReason.Error)
                 {
-                    Debug.Log($"CANCELED: ErrorCode={cancellation.ErrorCode}");
-                    Debug.Log($"CANCELED: ErrorDetails={cancellation.ErrorDetails}");
-                    Debug.Log($"CANCELED: Did you update the subscription info?");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorCode={cancellation.ErrorCode}");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorDetails={cancellation.ErrorDetails}");
+                    SpeechServices.Instance.Log($"CANCELED: Did you update the subscription info?");
                 }
             }
         }
 
-        public async void StartContinuousRecognizing()
+        public async void StartContinuousRecognizing(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
+            _onStartSpeechRecognition = onStartSpeechRecognition;
+            _onSpeechRecognized = onSpeechRecognized;
+
             var stopRecognition = new TaskCompletionSource<int>();
 
             recognizer.Canceled += (s, e) =>
             {
-                recogitionStarted = false;
+                _recognitionStarted = false;
 
-                Debug.Log($"CANCELED: Reason={e.Reason}");
+                SpeechServices.Instance.Log($"CANCELED: Reason={e.Reason}");
 
                 if (e.Reason == CancellationReason.Error)
                 {
-                    Debug.Log($"CANCELED: ErrorCode={e.ErrorCode}");
-                    Debug.Log($"CANCELED: ErrorDetails={e.ErrorDetails}");
-                    Debug.Log($"CANCELED: Did you set the speech resource key and region values?");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorCode={e.ErrorCode}");
+                    SpeechServices.Instance.Log($"CANCELED: ErrorDetails={e.ErrorDetails}");
+                    SpeechServices.Instance.Log($"CANCELED: Did you set the speech resource key and region values?");
                 }
 
                 stopRecognition.TrySetResult(0);
@@ -202,8 +203,8 @@ namespace DracarysInteractive.AIStudio
 
             recognizer.SessionStopped += (s, e) =>
             {
-                recogitionStarted = false;
-                Debug.Log("\n    Session stopped event.");
+                _recognitionStarted = false;
+                SpeechServices.Instance.Log("\n    Session stopped event.");
                 stopRecognition.TrySetResult(0);
             };
 
@@ -239,7 +240,7 @@ namespace DracarysInteractive.AIStudio
                 {
                     var cancellation = SpeechSynthesisCancellationDetails.FromResult(e.Result);
                     string message = $"CANCELED:\nReason=[{cancellation.Reason}]\nErrorDetails=[{cancellation.ErrorDetails}]\nDid you update the subscription info?";
-                    Debug.LogError(message);
+                    SpeechServices.Instance.Log(message, SpeechServices.LogLevel.error);
                 };
 
                 synthesizers[voice] = synthesizer;
@@ -270,8 +271,6 @@ namespace DracarysInteractive.AIStudio
 
         void OnDestroy()
         {
-            Debug.Log("SpeechServices.OnDestroy cleaning up recognizer and synthesizers...");
-
             if (recognizer != null)
             {
                 recognizer.Dispose();
@@ -288,7 +287,7 @@ namespace DracarysInteractive.AIStudio
             return sampleRate;
         }
 #else
-        public void Recognize()
+        public void Recognize(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
             throw new NotImplementedException();
         }
@@ -298,17 +297,12 @@ namespace DracarysInteractive.AIStudio
             throw new NotImplementedException();
         }
 
-        public void SetClient(ISpeechServicesClient client)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Speak(string text, string voice, Action<float[]> onDataReceived, Action onSynthesisCompleted)
         {
             throw new NotImplementedException();
         }
 
-        public void StartContinuousRecognizing()
+        public void StartContinuousRecognizing(Action onStartSpeechRecognition, Action<string> onSpeechRecognized)
         {
             throw new NotImplementedException();
         }

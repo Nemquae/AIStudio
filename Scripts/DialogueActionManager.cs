@@ -8,6 +8,8 @@ namespace DracarysInteractive.AIStudio
     {
         private float _currentTime;
 
+        [SerializeReference] private DialogueActionBase _runningAction;
+
         // This is a List in lieu of a Queue so it can be observed in the Inspector
         [SerializeReference] private List<DialogueActionBase> _queue = new List<DialogueActionBase>();
 
@@ -22,7 +24,7 @@ namespace DracarysInteractive.AIStudio
 
         public bool ActionsPending
         {
-            get { return _queue.Count > 0;  }
+            get { return _queue.Count > 0; }
         }
 
         private bool actionRunning
@@ -50,8 +52,9 @@ namespace DracarysInteractive.AIStudio
             if (!actionRunning && ActionsPending)
             {
                 actionRunning = true;
-                DialogueActionBase action = Dequeue();
+                DialogueActionBase action = _runningAction = Dequeue();
                 action.onCompletion += ActionCompleted;
+                action.startTime = currentTime;
                 action.Invoke();
             }
         }
@@ -65,9 +68,14 @@ namespace DracarysInteractive.AIStudio
 
         private void ActionCompleted()
         {
+            _runningAction.onCompletion -= ActionCompleted;
+            _runningAction.completionTime = currentTime;
+            Log($"action: {_runningAction.GetType().Name} wait time: {_runningAction.startTime - _runningAction.creationTime} " +
+                $"run time: {_runningAction.completionTime - _runningAction.startTime}");
+            _runningAction = null;
             actionRunning = false;
         }
-    
+
         public void EnqueueAction(DialogueActionBase action, bool force = false)
         {
             if (!DialogueManager.Instance.dialogueClosed || force)
