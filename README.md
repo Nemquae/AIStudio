@@ -52,8 +52,8 @@ The next section describes in more detail how to satisfy these dependencies and 
 To run the Simple scenes which demonstrate the core architecture, the following licenses must be obtained, and accompanying Unity packages must be installed.
 
 ### *AI Studio*
-* Download and install the SRI *AI Studio* package from the [Unity Asset Store](https://assetstore.unity.com/) or via [GitHub](https://github.com/Dracarys-Interactive/AIStudio.git) or [from here](https://1drv.ms/u/s!ArFvxkQ02ZoSidNi7o1DlpkHlpA2Kw?e=ezwyPd).
-* You may get *missing Prefab* errors due to the dependencies *.../Prefabs/Environment.pref* has on the CITY package, but this can be ignored when running the Simple scenes. 
+* Download and install the Dracarys Interactive *AI Studio* package from the [Unity Asset Store](https://assetstore.unity.com/) or via [GitHub](https://github.com/Dracarys-Interactive/AIStudio.git) or [from here](https://1drv.ms/u/s!ArFvxkQ02ZoSjMg7ETpMHyhQZdCGnA?e=2cplED).
+* You may get *missing Prefab* errors due to the dependencies *.../Prefabs/Environment.prefab* has on the CITY package, but this can be ignored when running the Simple scenes. 
 
 ### OpenAI
 * An [OpenAI](https://openai.com/) account and API key are required to run all sample scenes. Once you have obtained the key, you must create a folder *.openai* under your home folder with a file *auth.json* containing the following:
@@ -68,7 +68,7 @@ To run the Simple scenes which demonstrate the core architecture, the following 
 * A subscription key for the [Microsoft Azure Speech Service](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/overview#try-the-speech-service-for-free). 
 * Once you have obtained the key, you must set the environment variables COGNITIVE_SERVICE_KEY and COGNITIVE_SERVICE_REGION.
 * Alternatively, you can enter the key and region fields directly via the Inspector.
-* Download and install the [Speech SDK for Unity Package](https://aka.ms/csspeech/unitypackage).
+* Download and install the [Speech SDK for Unity Package](https://aka.ms/csspeech/unitypackage). You may also download this package [from here](https://1drv.ms/u/s!ArFvxkQ02ZoSjMgmyFTzlvp9nqg3_w?e=wgjiiZ).
 * Add the *Scripting Define Symbol* **USE_MICROSOFT_COGNITIVESERVICES_SPEECH** to the *Player Project Settings* under *Script Compilation*.
 
 There are three Simple scenes that you can run under *Skylands Research Institure/AI Studio/Scenes*:
@@ -98,8 +98,12 @@ To run the City scenes which include a city game world and avatar characters, th
         > if (!(_hasAnimator = _animator)) _hasAnimator = TryGetComponent(out _animator);
     * Make method OnFootstep public (line 372)
     * Make method OnLand public (line 384)
+
 ### Starter Assets – First Person Character Controller
 * The Unity Asset Store [Starter Assets - First Person Character Controller](https://assetstore.unity.com/packages/essentials/starter-assets-first-person-character-controller-urp-196525), a free asset, must be imported.
+### Input System
+* The Unity Starter Assets depend on the new input system so you will need to make to set the Player settings active input handling to either the new input system or both the new and the old.
+* The Input System must be installed from the Unity Registry
 ### UMA 2 - Unity Multipurpose Avatar
 * The [Unity Asset Store UMA 2 - Unity Multipurpose Avatar](https://assetstore.unity.com/packages/3d/characters/uma-2-unity-multipurpose-avatar-35611), a free asset, must be imported.
 ### CITY package
@@ -119,7 +123,7 @@ The scene *City Scene Avatar Wars 2 NPC* requires the installation of *Ready Pla
 
 ### Ready Player Me package
 * Follow [these instructions](https://docs.readyplayer.me/ready-player-me/integration-guides/unity/quickstart) to setup RPM and install the software into Unity. Make sure to also import all the loader samples.
-* Import an RPM avatar [from here](https://1drv.ms/u/s!ArFvxkQ02ZoSh_MuEU9udKCNhTwmyg?e=VeciEY).
+* Import an RPM avatar package [from here](https://1drv.ms/u/s!ArFvxkQ02ZoSh_MuEU9udKCNhTwmyg?e=VeciEY).
 
 This [YouTube video](https://youtu.be/Y9N1owUCRYs) demonstrates how to extend the Unity project configured to run the City scenes to run  *Avatar Wars*.
 
