@@ -1,0 +1,73 @@
+{
+    "name": "aistudio",
+    "rootNamespace": "",
+    "references": [
+        "GUID:96af4ea235d92d245a095007c6ca3701",
+        "GUID:36f486ff968bbf4439cd840e8fca87ea",
+        "GUID:1ab84064f834afe4797cd01345c4686b",
+        "GUID:e34105d609c45f54aab82374692c2c2e",
+        "GUID:84c2366a7d4a3f44783485159d5782e6",
+        "GUID:b7665bce58a1de546a53a59dc2154359",
+        "GUID:8efa46cf89bf70f499a67383a7b760d4",
+        "GUID:a92b285006c4dce4cabcf44d083f4e5a",
+        "GUID:57cba0371a63b2a4aaa9e24b5cbfeff9",
+        "GUID:21b73d575b58c104db2a5ec16f91a35b",
+        "GUID:4f92a78cb5808ec48a313e7520bd113d",
+        "GUID:9cf69526e1660aa45bc90c9b4ea11bc2",
+        "GUID:f4cb6d2c24715bd4884385645277f011",
+        "GUID:009f593230ab9a84a9596128dcedbe69",
+        "GUID:5c2adf75cf0e415438cf7a359d21d301",
+        "GUID:ba3b889a499bd634591d1aa2dc7b1f5c",
+        "GUID:762faf06f60fab647b9b71ae958fdf20",
+        "GUID:58a743fc042d1cc4bacc5a05c82a03f9",
+        "GUID:5786b1a7a94f11943b8a6d85a558e577",
+        "GUID:fc54d62c1ca99e743bf1d95c40e63e49",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:ba8c092d026123a418fb4bfb797a7bd8",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "SALSA-LipSync.dll",
+        "SALSA-LipSync-Editor.dll",
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "0",
+            "define": "USE_COM_OPENAI_API_UNITY"
+        },
+        {
+            "name": "Unity",
+            "expression": "0",
+            "define": "USE_MICROSOFT_COGNITIVESERVICES_SPEECH"
+        },
+        {
+            "name": "Unity",
+            "expression": "0",
+            "define": "USE_CINEMACHINE"
+        },
+        {
+            "name": "Unity",
+            "expression": "0",
+            "define": "STARTER_ASSETS_PACKAGES_CHECKED"
+        },
+        {
+            "name": "Unity",
+            "expression": "0",
+            "define": "CMS_SALSA"
+        },
+        {
+            "name": "Unity",
+            "expression": "0",
+            "define": "READY_PLAYER_ME"
+        }
+    ],
+    "noEngineReferences": false
+}
